@@ -4,7 +4,7 @@ this repo contains some public methodologies which I found from internet (google
 # Help to Improv repo
 If you found any methodologies please add a pull request so I can merge that and update the repo :D
 
-# 1
+# methodology number 1
 ```
 subfinder -d viator.com -all  -recursive > subdomain.txt
 
@@ -38,7 +38,9 @@ cat allurls.txt | gf redirect | openredirex -p /home/coffinxp/openRedirect
 
 ---
 
-# 2 [ref](https://github.com/RemmyNine/BBH-Recon)
+# methodology number 2 
+
+- methodology source : [https://github.com/RemmyNine/BBH-Recon](https://github.com/RemmyNine/BBH-Recon)
 
 - [Wide Recon](#WideRecon)
     - [Subdomain Enumerating](#Subdomain_Enumerating)
@@ -58,6 +60,7 @@ cat allurls.txt | gf redirect | openredirex -p /home/coffinxp/openRedirect
       - [DNS BureForce](#DnsBF)
           - [PureDNS](https://github.com/d3mondev/puredns) --> Do a static DNS bruteforce with multiple worldlist. Assetnote, all.txt by JHaddix and SecLists are good options.
           - [Gotator](https://github.com/Josue87/gotator) and [DNSGen](https://github.com/AlephNullSK/dnsgen) --> This gonna be a second-time/dynamic DNS bruteforce using permutation. *DO NOT SKIP THIS PART*
+       
 - [Asset Discovery](#AssetDiscovery)
     - Find ASNs + CIDRs + IP, NameServers --> PortScan + Reverse DNS Lookup
     - Unqiue Strings, Copyrights.
