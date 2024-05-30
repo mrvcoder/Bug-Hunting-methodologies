@@ -1,7 +1,7 @@
 # Bug-Hunting-methodologies
 this repo contains some public methodologies which I found from internet (google,telegram,discord,writeups etc..) 
 
-# Help to Improv repo
+# Help to improve repo
 If you found any methodologies please add a pull request so I can merge that and update the repo :D
 
 # methodology number 1
